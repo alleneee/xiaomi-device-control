@@ -1,0 +1,22 @@
+{
+  "name": "xiaomi-home",
+  "version": "1.0.0",
+  "description": "小米/米家智能家居控制插件。通过云端 API 控制家中的小米设备（灯、净化器、电暖气、空调、风扇、扫地机、窗帘等），支持自然语言指令和场景联动。",
+  "author": {
+    "name": "niko"
+  },
+  "repository": "https://github.com/niko/xiaomi-device-control",
+  "license": "MIT",
+  "keywords": ["xiaomi", "mi-home", "smart-home", "iot", "miot"],
+  "mcpServers": {
+    "xiaomi-home": {
+      "command": "uv",
+      "args": ["run", "--directory", "${CLAUDE_PLUGIN_ROOT}", "python", "-m", "src.server"],
+      "env": {
+        "MI_USERNAME": "${MI_USERNAME}",
+        "MI_PASSWORD": "${MI_PASSWORD}",
+        "MI_CLOUD_COUNTRY": "${MI_CLOUD_COUNTRY}"
+      }
+    }
+  }
+}

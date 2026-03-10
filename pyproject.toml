@@ -1,0 +1,14 @@
+[project]
+name = "xiaomi-device-control"
+version = "0.1.0"
+description = "小米智能家居 MCP Server - 通过自然语言控制米家设备"
+readme = "README.md"
+requires-python = ">=3.12.11"
+dependencies = [
+    "cryptography>=46.0.5",
+    "mcp[cli]>=1.26.0",
+    "pydantic-settings>=2.13.1",
+]
+
+[project.scripts]
+xiaomi-mcp = "src.server:mcp.run"

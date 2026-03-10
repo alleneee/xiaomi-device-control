@@ -1,0 +1,18 @@
+# IDE
+.idea/
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# 敏感文件
+.env
+.mi_token
+.mi_session
