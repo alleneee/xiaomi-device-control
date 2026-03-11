@@ -7,6 +7,5 @@
   },
   "repository": "https://github.com/alleneee/xiaomi-device-control",
   "license": "MIT",
-  "keywords": ["xiaomi", "mi-home", "smart-home", "iot", "miot"],
-  "category": "iot"
+  "keywords": ["xiaomi", "mi-home", "smart-home", "iot", "miot"]
 }
