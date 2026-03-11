@@ -134,6 +134,7 @@ uv run python -m src.auth_helper verify <验证码>
 ```text
 xiaomi-device-control/
 ├── .claude-plugin/
+│   ├── marketplace.json    # 插件市场清单
 │   └── plugin.json         # 插件元数据 + MCP Server 声明
 ├── skills/
 │   └── xiaomi-home/
