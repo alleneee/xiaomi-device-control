@@ -5,7 +5,7 @@
   "author": {
     "name": "niko"
   },
-  "repository": "https://github.com/niko/xiaomi-device-control",
+  "repository": "https://github.com/alleneee/xiaomi-device-control",
   "license": "MIT",
   "keywords": ["xiaomi", "mi-home", "smart-home", "iot", "miot"],
   "mcpServers": {

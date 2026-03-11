@@ -35,9 +35,18 @@
 
 ### 方式一：Claude Plugin（推荐）
 
+在 Claude Code 交互界面中执行：
+
+```text
+/plugin marketplace add alleneee/xiaomi-device-control
+/plugin install xiaomi-home@alleneee-xiaomi-device-control
+```
+
+或在命令行中执行：
+
 ```bash
-claude plugins marketplace add your-github-username/xiaomi-device-control
-claude plugins install xiaomi-home@your-github-username
+claude plugin marketplace add alleneee/xiaomi-device-control
+claude plugin install xiaomi-home@alleneee-xiaomi-device-control
 ```
 
 ### 方式二：手动安装
