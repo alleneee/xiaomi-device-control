@@ -7,12 +7,31 @@ description: 小米/米家智能家居设备控制。通过 MCP Server 工具控
 
 你可以通过 MCP Server 提供的工具控制用户家中的小米/米家智能设备。
 
+## 首次配置
+
+每次收到设备控制请求时，先调用 `xiaomi_auth_status` 检查认证状态。
+
+如果状态为 `not_configured` 或 `not_authenticated`，引导用户完成配置：
+
+1. 告诉用户需要提供小米账号和密码
+2. 用户提供后，调用 `xiaomi_setup(username, password, country)` 发起登录
+3. 如果返回 `verification_required`，告诉用户查看手机/邮箱验证码
+4. 用户提供验证码后，调用 `xiaomi_verify(code)` 完成认证
+5. 认证成功后继续执行原始的设备控制请求
+
+如果状态为 `pending_verification`，直接询问用户验证码。
+
+如果状态为 `authenticated`，跳过配置直接操作设备。
+
 ## 可用工具
 
 MCP Server `xiaomi-home` 提供以下工具：
 
 | 工具 | 用途 |
 |------|------|
+| `xiaomi_auth_status` | 检查认证状态 |
+| `xiaomi_setup` | 配置账号并发起登录 |
+| `xiaomi_verify` | 提交二次验证码 |
 | `xiaomi_list_devices` | 列出所有设备，获取设备 did |
 | `xiaomi_find_device` | 按名称模糊搜索设备 |
 | `xiaomi_get_properties` | 读取设备属性 |
@@ -88,9 +107,9 @@ MCP Server `xiaomi-home` 提供以下工具：
 ## 场景联动
 
 用户可能描述一个场景而非单个设备操作，例如：
-- "我要睡觉了" → 关灯 + 净化器睡眠模式 + 电暖气调低
-- "出门了" → 关闭所有设备
-- "客厅太暗了" → 开灯并调高亮度
+- "我要睡觉了" -> 关灯 + 净化器睡眠模式 + 电暖气调低
+- "出门了" -> 关闭所有设备
+- "客厅太暗了" -> 开灯并调高亮度
 
 遇到场景指令时，拆解为多个设备操作，依次执行并汇报结果。
 

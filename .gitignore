@@ -16,3 +16,4 @@ wheels/
 .env
 .mi_token
 .mi_session
+.mi_credentials

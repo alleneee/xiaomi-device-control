@@ -3,6 +3,7 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
+from src.auth_helper import get_auth_status, initiate_login, submit_verification
 from src.xiaomi_client import (
     call_device_action,
     find_device_by_name,
@@ -12,6 +13,37 @@ from src.xiaomi_client import (
 )
 
 mcp = FastMCP("xiaomi-home")
+
+
+@mcp.tool()
+def xiaomi_auth_status() -> str:
+    """检查小米账号认证状态。首次使用时调用此工具确认是否需要配置。"""
+    result = get_auth_status()
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def xiaomi_setup(username: str, password: str, country: str = "cn") -> str:
+    """配置小米账号并发起登录。首次使用或需要重新认证时调用。
+
+    参数:
+        username: 小米账号（手机号或邮箱）
+        password: 小米账号密码
+        country: 服务器区域，默认 cn（中国大陆），可选 de/i2/ru/sg/us
+    """
+    result = initiate_login(username, password, country)
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def xiaomi_verify(code: str) -> str:
+    """提交小米二次验证码。在 xiaomi_setup 提示需要验证后调用。
+
+    参数:
+        code: 手机或邮箱收到的验证码
+    """
+    result = submit_verification(code)
+    return json.dumps(result, ensure_ascii=False, indent=2)
 
 
 @mcp.tool()

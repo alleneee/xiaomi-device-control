@@ -1,26 +1,30 @@
-"""认证辅助脚本：处理小米云端登录的二次验证"""
+"""认证辅助：处理小米云端登录的二次验证"""
 
 import json
 import sys
 from pathlib import Path
 
-from src.config import get_settings
+from src.config import get_settings, save_credentials
 from src.micloud import MiCloud, VerificationRequired
 
 SESSION_FILE = Path(__file__).parent.parent / ".mi_session"
 TOKEN_FILE = Path(__file__).parent.parent / ".mi_token"
 
 
-def step1_login():
-    """第一步：登录并触发验证码"""
+def initiate_login(username: str | None = None, password: str | None = None, country: str = "cn") -> dict:
+    if username and password:
+        save_credentials(username, password, country)
+
     s = get_settings()
+    if not s.mi_username or not s.mi_password:
+        return {"status": "missing_credentials", "message": "请提供小米账号和密码"}
+
     cloud = MiCloud(username=s.mi_username, password=s.mi_password, server=s.mi_cloud_country)
 
     try:
         cloud.login()
         _save_token(cloud)
-        print("直接登录成功，无需验证!")
-        return True
+        return {"status": "ok", "message": "登录成功，无需验证"}
     except VerificationRequired as e:
         session_data = {
             "auth_state": cloud._auth_state,
@@ -28,16 +32,12 @@ def step1_login():
         }
         with open(SESSION_FILE, "w") as f:
             json.dump(session_data, f)
-        print(f"{e}")
-        print("验证码已发送，请运行: uv run python -m src.auth_helper verify <验证码>")
-        return False
+        return {"status": "verification_required", "message": str(e)}
 
 
-def step2_verify(code: str):
-    """第二步：提交验证码"""
+def submit_verification(code: str) -> dict:
     if not SESSION_FILE.exists():
-        print("错误: 请先运行登录步骤")
-        return False
+        return {"status": "error", "message": "请先调用 xiaomi_setup 发起登录"}
 
     with open(SESSION_FILE) as f:
         session_data = json.load(f)
@@ -47,25 +47,38 @@ def step2_verify(code: str):
     cloud._auth_state = session_data["auth_state"]
     cloud.device_id = session_data["device_id"]
 
-    cloud.submit_verification(code)
+    try:
+        cloud.submit_verification(code)
+    except RuntimeError as e:
+        return {"status": "error", "message": str(e)}
+
     _save_token(cloud)
     SESSION_FILE.unlink(missing_ok=True)
-    print("验证成功!")
 
     devices = cloud.get_devices()
-    print(f"\n共找到 {len(devices)} 个设备:")
-    for d in devices:
-        name = d.get("name", "?")
-        model = d.get("model", "?")
-        did = d.get("did", "?")
-        ip = d.get("localip", "")
-        online = d.get("isOnline", False)
-        print(f"  - {name} | model={model} | did={did} | ip={ip} | online={online}")
-    return True
+    device_summary = [
+        {"name": d.get("name", "?"), "model": d.get("model", "?"), "online": d.get("isOnline", False)}
+        for d in devices
+    ]
+    return {"status": "ok", "message": f"验证成功，共找到 {len(devices)} 个设备", "devices": device_summary}
+
+
+def get_auth_status() -> dict:
+    has_token = TOKEN_FILE.exists()
+    s = get_settings()
+    has_creds = bool(s.mi_username and s.mi_password)
+    pending_verify = SESSION_FILE.exists()
+
+    if has_token:
+        return {"status": "authenticated", "message": "已认证，可正常使用"}
+    if pending_verify:
+        return {"status": "pending_verification", "message": "等待验证码，请调用 xiaomi_verify 提交验证码"}
+    if has_creds:
+        return {"status": "not_authenticated", "message": "已有账号信息，请调用 xiaomi_setup 发起登录"}
+    return {"status": "not_configured", "message": "未配置账号，请调用 xiaomi_setup 提供小米账号和密码"}
 
 
 def _save_token(cloud: MiCloud):
-    """保存登录凭证，避免重复验证"""
     token_data = {
         "cookies": cloud.cookies,
         "ssecurity": cloud.ssecurity.hex(),
@@ -76,7 +89,6 @@ def _save_token(cloud: MiCloud):
 
 
 def load_cloud_from_token() -> MiCloud | None:
-    """从保存的 token 恢复 MiCloud 实例"""
     if not TOKEN_FILE.exists():
         return None
     try:
@@ -97,6 +109,8 @@ if __name__ == "__main__":
         if len(sys.argv) < 3:
             print("用法: uv run python -m src.auth_helper verify <验证码>")
             sys.exit(1)
-        step2_verify(sys.argv[2])
+        result = submit_verification(sys.argv[2])
+        print(result["message"])
     else:
-        step1_login()
+        result = initiate_login()
+        print(result["message"])

@@ -77,7 +77,22 @@ uv sync
 
 ## 配置
 
-### 1. 设置环境变量
+### 方式一：对话中配置（推荐）
+
+安装插件后，直接告诉 Claude：
+
+```text
+用户: 帮我配置小米账号
+Claude: 请提供你的小米账号和密码
+用户: 账号 xxx 密码 xxx
+Claude: (调用 xiaomi_setup) 验证码已发送到你的手机 138****1234
+用户: 验证码是 123456
+Claude: (调用 xiaomi_verify) 验证成功，找到 12 个设备
+```
+
+认证成功后 token 自动保存，后续无需重复配置。
+
+### 方式二：环境变量配置
 
 ```bash
 cp .env.example .env
@@ -91,17 +106,10 @@ MI_PASSWORD=你的密码
 MI_CLOUD_COUNTRY=cn
 ```
 
-### 2. 首次登录认证
-
-小米账号需要二次验证，首次使用需手动完成：
+首次登录需完成二次验证：
 
 ```bash
 uv run python -m src.auth_helper
-```
-
-收到验证码后：
-
-```bash
 uv run python -m src.auth_helper verify <验证码>
 ```
 
@@ -111,6 +119,9 @@ uv run python -m src.auth_helper verify <验证码>
 
 | 工具 | 说明 |
 |------|------|
+| `xiaomi_auth_status` | 检查认证状态 |
+| `xiaomi_setup` | 配置账号并发起登录 |
+| `xiaomi_verify` | 提交二次验证码 |
 | `xiaomi_list_devices` | 列出所有设备 |
 | `xiaomi_find_device` | 根据名称搜索设备 |
 | `xiaomi_get_properties` | 云端读取设备属性 |
@@ -134,18 +145,12 @@ uv run python -m src.auth_helper verify <验证码>
 ```text
 xiaomi-device-control/
 ├── .claude-plugin/
+│   ├── plugin.json            # 插件元数据
 │   └── marketplace.json       # 插件市场清单
-├── plugins/
-│   └── xiaomi-home/           # 插件目录
-│       ├── .claude-plugin/
-│       │   └── plugin.json    # 插件元数据
-│       ├── .mcp.json          # MCP Server 声明
-│       └── skills/
-│           └── xiaomi-home/
-│               └── SKILL.md   # Skill 定义
+├── .mcp.json                  # MCP Server 声明
 ├── skills/
 │   └── xiaomi-home/
-│       └── SKILL.md           # Skill 定义（手动安装用）
+│       └── SKILL.md           # Skill 定义
 ├── src/                       # MCP Server 源码
 │   ├── server.py              # FastMCP Server（5个工具）
 │   ├── xiaomi_client.py       # 设备操作封装
