@@ -134,17 +134,24 @@ uv run python -m src.auth_helper verify <验证码>
 ```text
 xiaomi-device-control/
 ├── .claude-plugin/
-│   ├── marketplace.json    # 插件市场清单
-│   └── plugin.json         # 插件元数据 + MCP Server 声明
+│   └── marketplace.json       # 插件市场清单
+├── plugins/
+│   └── xiaomi-home/           # 插件目录
+│       ├── .claude-plugin/
+│       │   └── plugin.json    # 插件元数据
+│       ├── .mcp.json          # MCP Server 声明
+│       └── skills/
+│           └── xiaomi-home/
+│               └── SKILL.md   # Skill 定义
 ├── skills/
 │   └── xiaomi-home/
-│       └── SKILL.md         # Skill 定义
-├── src/                     # MCP Server 源码
-│   ├── server.py            # FastMCP Server（5个工具）
-│   ├── xiaomi_client.py     # 设备操作封装
-│   ├── micloud.py           # 小米云端 API 客户端
-│   ├── auth_helper.py       # 认证辅助（二次验证）
-│   └── config.py            # 配置管理
+│       └── SKILL.md           # Skill 定义（手动安装用）
+├── src/                       # MCP Server 源码
+│   ├── server.py              # FastMCP Server（5个工具）
+│   ├── xiaomi_client.py       # 设备操作封装
+│   ├── micloud.py             # 小米云端 API 客户端
+│   ├── auth_helper.py         # 认证辅助（二次验证）
+│   └── config.py              # 配置管理
 ├── .env.example
 ├── pyproject.toml
 └── README.md

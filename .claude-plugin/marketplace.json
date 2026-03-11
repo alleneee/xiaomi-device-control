@@ -1,14 +1,20 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "xiaomi-device-control",
+  "description": "小米/米家智能家居控制插件市场",
   "owner": {
     "name": "alleneee"
   },
   "plugins": [
     {
       "name": "xiaomi-home",
-      "source": ".",
+      "source": "./plugins/xiaomi-home",
       "description": "小米/米家智能家居控制插件，通过云端 API 控制家中的小米设备",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "author": {
+        "name": "alleneee"
+      },
+      "category": "iot"
     }
   ]
 }

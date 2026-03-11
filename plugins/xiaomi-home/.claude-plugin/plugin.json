@@ -1,0 +1,12 @@
+{
+  "name": "xiaomi-home",
+  "version": "1.0.0",
+  "description": "小米/米家智能家居控制插件，通过云端 API 控制家中的小米设备",
+  "author": {
+    "name": "alleneee"
+  },
+  "repository": "https://github.com/alleneee/xiaomi-device-control",
+  "license": "MIT",
+  "keywords": ["xiaomi", "mi-home", "smart-home", "iot", "miot"],
+  "category": "iot"
+}
