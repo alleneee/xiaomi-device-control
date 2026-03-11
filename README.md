@@ -52,7 +52,7 @@ claude plugin install xiaomi-home@alleneee-xiaomi-device-control
 ### 方式二：手动安装
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/alleneee/xiaomi-device-control.git
 cd xiaomi-device-control
 uv sync
 ```
@@ -63,17 +63,14 @@ uv sync
 {
   "xiaomi-home": {
     "command": "uv",
-    "args": ["run", "--directory", "/path/to/xiaomi-device-control", "python", "-m", "src.server"],
-    "env": {
-      "MI_USERNAME": "你的小米账号",
-      "MI_PASSWORD": "你的密码",
-      "MI_CLOUD_COUNTRY": "cn"
-    }
+    "args": ["run", "--directory", "/path/to/xiaomi-device-control", "python", "-m", "src.server"]
   }
 }
 ```
 
 复制 `skills/xiaomi-home/` 到 `~/.claude/skills/xiaomi-home/`。
+
+首次使用时在对话中告诉 Claude 配置小米账号即可，无需手动设置环境变量。
 
 ## 配置
 
