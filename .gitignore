@@ -17,3 +17,5 @@ wheels/
 .mi_token
 .mi_session
 .mi_credentials
+.camera_config.json
+snapshots/

@@ -4,6 +4,12 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from src.auth_helper import get_auth_status, initiate_login, submit_verification
+from src.camera import (
+    add_camera,
+    capture_snapshot,
+    list_cameras,
+    remove_camera,
+)
 from src.xiaomi_client import (
     call_device_action,
     find_device_by_name,
@@ -116,4 +122,48 @@ def xiaomi_call_action(did: str, siid: int, aiid: int, params: str = "") -> str:
     """
     param_list = json.loads(params) if params else []
     result = call_device_action(did, siid, aiid, param_list)
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def xiaomi_camera_list() -> str:
+    """列出所有已配置的摄像头，返回名称和 RTSP 地址。"""
+    cameras = list_cameras()
+    if not cameras:
+        return json.dumps({"message": "暂无摄像头配置，请先用 xiaomi_camera_add 添加"}, ensure_ascii=False)
+    return json.dumps(cameras, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def xiaomi_camera_add(name: str, rtsp_url: str) -> str:
+    """添加或更新摄像头配置。
+
+    参数:
+        name: 摄像头名称，如"门口"、"客厅"
+        rtsp_url: RTSP 流地址，如 rtsp://192.168.1.100:8554/stream
+                  测试时可用 mock://目录名 或 mock:///绝对路径 加载本地图片
+    """
+    result = add_camera(name, rtsp_url)
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def xiaomi_camera_remove(name: str) -> str:
+    """移除摄像头配置。
+
+    参数:
+        name: 摄像头名称
+    """
+    result = remove_camera(name)
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def xiaomi_camera_snapshot(name: str) -> str:
+    """从指定摄像头截取一张图片。返回图片文件路径，可用 Read 工具查看图片内容。
+
+    参数:
+        name: 摄像头名称（需先通过 xiaomi_camera_add 配置）
+    """
+    result = capture_snapshot(name)
     return json.dumps(result, ensure_ascii=False, indent=2)

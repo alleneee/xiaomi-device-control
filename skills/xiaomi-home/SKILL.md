@@ -37,6 +37,10 @@ MCP Server `xiaomi-home` 提供以下工具：
 | `xiaomi_get_properties` | 读取设备属性 |
 | `xiaomi_set_property` | 设置设备属性 |
 | `xiaomi_call_action` | 调用设备动作 |
+| `xiaomi_camera_list` | 列出已配置的摄像头 |
+| `xiaomi_camera_add` | 添加/更新摄像头 |
+| `xiaomi_camera_remove` | 移除摄像头 |
+| `xiaomi_camera_snapshot` | 摄像头截图 |
 
 ## 工作流程
 
@@ -110,6 +114,7 @@ MCP Server `xiaomi-home` 提供以下工具：
 - "我要睡觉了" -> 关灯 + 净化器睡眠模式 + 电暖气调低
 - "出门了" -> 关闭所有设备
 - "客厅太暗了" -> 开灯并调高亮度
+- "看看门口" -> 截图 + 分析 + 建议联动
 
 遇到场景指令时，拆解为多个设备操作，依次执行并汇报结果。
 
@@ -119,3 +124,17 @@ MCP Server `xiaomi-home` 提供以下工具：
 - siid/piid 因型号而异，失败时用探测方式确认正确的属性 ID
 - 布尔值使用 true/false，不是 0/1
 - 设备 did 是字符串，不要猜测，必须从 list 或 find 工具获取
+
+## 摄像头与视觉感知
+
+当用户想"看看"某个位置时，使用摄像头截图功能：
+
+1. 调用 `xiaomi_camera_list` 确认有哪些摄像头
+2. 调用 `xiaomi_camera_snapshot(name)` 截取图片
+3. 用 Read 工具读取返回的图片路径，分析图片内容
+4. 用自然语言描述看到的内容，并根据场景建议联动操作
+
+触发关键词："看看"、"门口有没有人"、"摄像头"、"监控"、"拍一张"等。
+
+如果用户想添加摄像头，引导使用 `xiaomi_camera_add(name, rtsp_url)`。
+测试时可用 `mock://文件名` 或 `mock://目录名` 加载本地图片。
